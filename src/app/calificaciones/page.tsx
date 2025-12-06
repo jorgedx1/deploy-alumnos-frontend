@@ -79,7 +79,21 @@ function computeStatusIndex(payload: GradesPayload) {
 
     if (curr.has(planItem.code)) {
       status = "in_progress";
-      semester = curr.get(planItem.code)!.semester ?? payload.currentSemester ?? semester;
+    
+      const candidateSemester =
+        curr.get(planItem.code)?.semester ??
+        payload.currentSemester ??
+        semester;
+    
+      const normalizedSemester =
+        typeof candidateSemester === "string"
+          ? parseInt(candidateSemester, 10)
+          : candidateSemester;
+    
+      // solo si es un número válido, lo asignamos
+      semester = Number.isNaN(normalizedSemester)
+        ? semester
+        : normalizedSemester;
     } else if (hist.has(planItem.code)) {
       const h = hist.get(planItem.code)!;
       status = statusFromRecord(h);
