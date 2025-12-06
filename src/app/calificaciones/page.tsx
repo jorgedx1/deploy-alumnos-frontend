@@ -78,29 +78,29 @@ function computeStatusIndex(payload: GradesPayload) {
     let semester = planItem.suggestedTerm ?? planItem.semester ?? payload.currentSemester ?? 1;
 
     if (curr.has(planItem.code)) {
-      status = "in_progress";
-    
-      const candidateSemester =
-        curr.get(planItem.code)?.semester ??
-        payload.currentSemester ??
-        semester;
-    
-      const normalizedSemester =
-        typeof candidateSemester === "string"
-          ? parseInt(candidateSemester, 10)
-          : candidateSemester;
-    
-      // solo si es un número válido, lo asignamos
-      semester = Number.isNaN(normalizedSemester)
-        ? semester
-        : normalizedSemester;
-    } else if (hist.has(planItem.code)) {
-      const h = hist.get(planItem.code)!;
-      status = statusFromRecord(h);
-      semester = h.semester ?? semester;
-    }
+    status = "in_progress";
+
+    const candidateSemester =
+      curr.get(planItem.code)?.semester ??
+      payload.currentSemester ??
+      semester;
+
+    semester = normalizeSemester(candidateSemester as any, semester);
+  } else if (hist.has(planItem.code)) {
+    const h = hist.get(planItem.code)!;
+    status = statusFromRecord(h);
+
+    semester = normalizeSemester(h.semester as any, semester);
+  }
     return { status, semester: Math.max(1, semester || 1) };
   };
+}
+
+function normalizeSemester(value: string | number | null | undefined, fallback: number): number {
+  if (value == null) return fallback;
+
+  const n = typeof value === "string" ? parseInt(value, 10) : value;
+  return Number.isNaN(n as number) ? fallback : (n as number);
 }
 
 /* ----------------- formulario expediente (si falta en URL) ----------------- */
