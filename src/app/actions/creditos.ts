@@ -63,7 +63,7 @@ export async function getCredits(): Promise<CreditsData> {
     );
 
     const current = summary.creditosActuales ?? 0;
-    const required = summary.totalCreditos ?? 0;
+    const required = summary.totalCreditos ?? 393;
 
     const currentLevel = Number(summary.nivelIngles ?? 0);
     const requiredLevel = 5; 
